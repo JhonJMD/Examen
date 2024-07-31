@@ -13,7 +13,7 @@ CREATE TABLE categoria(
 
 CREATE TABLE cliente(
     id VARCHAR(20),
-    nombre VARCHAR(4),
+    nombre VARCHAR(40),
     apellido VARCHAR(100),
     celular DECIMAL(10.0),
     direccion VARCHAR(80),
