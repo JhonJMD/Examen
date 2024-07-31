@@ -133,55 +133,108 @@
 - Calcular el precio total de ventas por cada cliente 
 
   ```SQL
-  
+  SELECT
+      cli.id,
+      CONCAT(cli.nombre, ' ', cli.apellido) AS cliente,
+      SUM(cp.total) AS total
+  FROM cliente cli
+  JOIN compra c ON c.id_cliente = cli.id
+  JOIN compras_productos cp ON cp.id_compra = c.id_compra
+  GROUP BY cli.id;
   ```
 
 - Calcular el precio promedio de los productos por categoría 
 
   ```SQL
-  
+  SELECT
+      c.id_categoria,
+      c.description,
+      AVG(p.precio_venta) AS promedio
+  FROM categoria c 
+  JOIN producto p ON c.id_categoria = p.id_categoria
+  GROUP BY c.id_categoria;
   ```
 
 - Encontrar la fecha de la primera y última compra registrada 
 
   ```SQL
-  
+  SELECT
+      MIN(c.fecha) AS primera_fecha,
+      MAX(c.fecha) AS ultima_fecha
+  FROM compra c;
   ```
 
 - Calcular el total de ingresos por ventas 
 
   ```SQL
-  
+  SELECT 
+      cp.id_compra,
+      cp.id_producto,
+      SUM(cp.total) AS Ingresos
+  FROM compras_productos cp
+  GROUP BY cp.id_producto, cp.id_compra;
   ```
 
 - Contar la cantidad de compras realizadas por cada medio de pago 
 
   ```SQL
-  
+  SELECT
+      c.medio_pago,
+      COUNT(c.id_compra) AS total
+  FROM compra c
+  GROUP BY c.medio_pago;
   ```
 
 - Calcular el total de productos vendidos por cada producto 
 
   ```SQL
-  
+  SELECT
+      p.id_producto,
+      p.nombre, 
+      SUM(cp.cantidad) AS total
+  FROM producto p 
+  JOIN compras_productos cp ON cp.id_producto = p.id_producto
+  GROUP BY p.id_producto;
   ```
 
 - Obtener el promedio de cantidad de productos comprados por compra 
 
   ```SQL
-  
+  SELECT
+      p.id_producto,
+      p.nombre,
+      AVG(cp.cantidad) AS promedio
+  FROM producto p
+  JOIN compras_productos cp ON cp.id_producto = p.id_producto
+  GROUP BY p.id_producto;
   ```
 
 - Encontrar los productos con el stock más bajo 
 
   ```SQL
-  
+  SELECT
+      p.id_producto,
+      p.nombre,
+      p.cantidad_stock
+  FROM producto p
+  WHERE p.cantidad_stock = (
+      SELECT 
+          MIN(p.cantidad_stock)
+      FROM producto p
+  );
   ```
 
 - Calcular el total de productos comprados y el total gastado por cliente 
 
   ```SQL
-  
+  SELECT
+      cli.id,
+      SUM(cp.cantidad) AS total_comprado,
+      SUM(cp.total) AS total_gastado
+  FROM cliente cli 
+  JOIN compra c ON c.id_cliente = cli.id
+  JOIN compras_productos cp ON cp.id_compra = c.id_compra
+  GROUP BY cli.id;
   ```
 
 ## **Consultas usando Join**
