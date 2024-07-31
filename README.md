@@ -239,73 +239,187 @@
 
 ## **Consultas usando Join**
 
-- Consultar todos los productos con sus categorías Consultar todas las compras y los clientes que las realizaron 
+- Consultar todos los productos con sus categorías 
 
   ```SQL
-  
+  SELECT 
+      p.id_producto, 
+      p.nombre AS producto,
+      p.codigo_barras,
+      p.precio_venta,
+      p.cantidad_stock,
+      c.description
+  FROM producto p
+  JOIN categoria c ON c.id_categoria = p.id_categoria;
+  ```
+
+- Consultar todas las compras y los clientes que las realizaron 
+
+  ```SQL
+  SELECT
+      c.id_compra,
+      c.fecha,
+      c.medio_pago,
+      c.comentario,
+      cli.id,
+      CONCAT(cli.nombre, ' ', cli.apellido) AS cliente
+  FROM compra c 
+  JOIN cliente cli ON cli.id = c.id_cliente;
   ```
 
 - Consultar los productos comprados en cada compra 
 
   ```SQL
-  
+  SELECT 
+      cp.id_producto,
+      cp.id_compra,
+      p.nombre AS producto
+  FROM compras_productos cp 
+  JOIN producto p ON p.id_producto = cp.id_producto;
   ```
 
 - Consultar las compras realizadas por un cliente específico 
 
   ```SQL
-  
+  SELECT 
+      cli.id,
+      CONCAT(cli.nombre, ' ', cli.apellido) AS cliente,
+      c.id_compra,
+      c.fecha,
+      c.medio_pago,
+      c.comentario,
+      c.estado
+  FROM cliente cli
+  JOIN compra c ON c.id_cliente = cli.id
+  WHERE cli.id = '111';
   ```
 
 - Consultar el total gastado por cada cliente 
 
   ```SQL
-  
+  SELECT
+      cli.id,
+      CONCAT(cli.nombre, ' ', cli.apellido) AS cliente,
+      SUM(cp.total) AS total_gastado
+  FROM cliente cli
+  JOIN compra c ON c.id_cliente = cli.id
+  JOIN compras_productos cp ON cp.id_compra = c.id_compra
+  GROUP BY cli.id; 
   ```
 
 - Consultar el stock disponible de productos y su categoría 
 
   ```SQL
-  
+  SELECT 
+      p.id_producto,
+      p.nombre AS producto,
+      p.cantidad_stock,
+      c.id_categoria,
+      c.description
+  FROM producto p 
+  JOIN categoria c ON c.id_categoria = p.id_categoria;
   ```
 
 - Consultar los detalles de compras junto con la información del cliente y el producto 
 
   ```SQL
-  
+  SELECT
+      cp.id_compra, 
+      cp.id_producto,
+      cli.id,
+      cp.cantidad, 
+      cp.total, 
+      cp.estado,
+      p.nombre AS producto, 
+      p.precio_venta,
+      CONCAT(cli.nombre, ' ', cli.apellido) AS cliente,
+      cli.celular,
+      cli.direccion,
+      cli.correo_electronico
+  FROM cliente cli
+  JOIN compra c ON c.id_cliente = cli.id
+  JOIN compras_productos cp ON cp.id_compra = c.id_compra
+  JOIN producto p ON p.id_producto = cp.id_producto;
   ```
 
 - Consultar los productos que han sido comprados por más de una cantidad específica 
 
   ```SQL
-  
+  SELECT 
+      p.id_producto,
+      p.nombre AS producto,
+      cp.cantidad AS cantidad_comprada
+  FROM producto p
+  JOIN compras_productos cp ON cp.id_producto = p.id_producto
+  WHERE cp.cantidad >= 10;
   ```
 
 - Consultar la cantidad total de productos vendidos por categoría 
 
   ```SQL
-  
+  SELECT
+      c.id_categoria,
+      c.description, 
+      SUM(cp.cantidad) AS total_vendidos
+  FROM categoria c
+  JOIN producto p ON p.id_categoria = c.id_categoria
+  JOIN compras_productos cp ON cp.id_producto = p.id_producto
+  GROUP BY c.id_categoria;
   ```
 
 - Consultar los clientes que han realizado compras en un rango de fechas específico 
 
   ```SQL
-  
+  SELECT 
+      cli.id,
+      CONCAT(cli.nombre, ' ', cli.apellido) AS cliente, 
+      c.fecha
+  FROM cliente cli
+  JOIN compra c ON cli.id = c.id_cliente
+  WHERE c.fecha BETWEEN '2024-07-01 00:00:00' AND '2024-07-31 00:00:00';
   ```
 
 - Consultar el total gastado por cada cliente junto con la cantidad total de productos comprados 
 
   ```SQL
-  
+  SELECT
+      cli.id,
+      CONCAT(cli.nombre, ' ', cli.apellido) AS cliente, 
+      SUM(cp.total) AS total_gastado,
+      COUNT(c.id_compra) AS productos
+  FROM cliente cli
+  JOIN compra c ON c.id_cliente = cli.id 
+  JOIN compras_productos cp ON cp.id_compra = c.id_compra
+  GROUP BY cli.id;
   ```
 
 - Consultar los productos que nunca han sido comprados 
 
   ```SQL
-  
+  SELECT 
+      p.id_producto,
+      p.nombre AS producto
+  FROM producto p
+  LEFT JOIN compras_productos cp ON p.id_producto = cp.id_producto
+  WHERE cp.id_producto IS NULL;
   ```
 
-- Consultar los clientes que han realizado más de una compra y el total gastado por ellos Consultar los productos más vendidos por categoría 
+- Consultar los clientes que han realizado más de una compra y el total gastado por ellos 
+
+  ```SQL
+  SELECT 
+      cli.id,
+      CONCAT(cli.nombre, ' ', cli.apellido) AS cliente, 
+      SUM(cp.total) AS total_gastado,
+      COUNT(c.id_compra) AS compras
+  FROM cliente cli
+  JOIN compra c ON c.id_cliente = cli.id
+  JOIN compras_productos cp ON cp.id_compra = c.id_cliente
+  GROUP BY c.id_compra
+  HAVING COUNT(c.id_compra) > 1;
+  ```
+
+- Consultar los productos más vendidos por categoría 
 
   ```SQL
   

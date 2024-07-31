@@ -201,3 +201,156 @@ FROM cliente cli
 JOIN compra c ON c.id_cliente = cli.id
 JOIN compras_productos cp ON cp.id_compra = c.id_compra
 GROUP BY cli.id;
+
+--Consultas JOIN
+--1
+SELECT 
+    p.id_producto, 
+    p.nombre AS producto,
+    p.codigo_barras,
+    p.precio_venta,
+    p.cantidad_stock,
+    c.description
+FROM producto p
+JOIN categoria c ON c.id_categoria = p.id_categoria;
+
+--2
+SELECT
+    c.id_compra,
+    c.fecha,
+    c.medio_pago,
+    c.comentario,
+    cli.id,
+    CONCAT(cli.nombre, ' ', cli.apellido) AS cliente
+FROM compra c 
+JOIN cliente cli ON cli.id = c.id_cliente;
+
+--3
+SELECT 
+    cp.id_producto,
+    cp.id_compra,
+    p.nombre AS producto
+FROM compras_productos cp 
+JOIN producto p ON p.id_producto = cp.id_producto;
+
+--4
+SELECT 
+    cli.id,
+    CONCAT(cli.nombre, ' ', cli.apellido) AS cliente,
+    c.id_compra,
+    c.fecha,
+    c.medio_pago,
+    c.comentario,
+    c.estado
+FROM cliente cli
+JOIN compra c ON c.id_cliente = cli.id
+WHERE cli.id = '111';
+
+--5
+SELECT
+    cli.id,
+    CONCAT(cli.nombre, ' ', cli.apellido) AS cliente,
+    SUM(cp.total) AS total_gastado
+FROM cliente cli
+JOIN compra c ON c.id_cliente = cli.id
+JOIN compras_productos cp ON cp.id_compra = c.id_compra
+GROUP BY cli.id; 
+
+--6
+SELECT 
+    p.id_producto,
+    p.nombre AS producto,
+    p.cantidad_stock,
+    c.id_categoria,
+    c.description
+FROM producto p 
+JOIN categoria c ON c.id_categoria = p.id_categoria;
+
+--7
+SELECT
+    cp.id_compra, 
+    cp.id_producto,
+    cli.id,
+    cp.cantidad, 
+    cp.total, 
+    cp.estado,
+    p.nombre AS producto, 
+    p.precio_venta,
+    CONCAT(cli.nombre, ' ', cli.apellido) AS cliente,
+    cli.celular,
+    cli.direccion,
+    cli.correo_electronico
+FROM cliente cli
+JOIN compra c ON c.id_cliente = cli.id
+JOIN compras_productos cp ON cp.id_compra = c.id_compra
+JOIN producto p ON p.id_producto = cp.id_producto;
+
+--8 
+SELECT 
+    p.id_producto,
+    p.nombre AS producto,
+    cp.cantidad AS cantidad_comprada
+FROM producto p
+JOIN compras_productos cp ON cp.id_producto = p.id_producto
+WHERE cp.cantidad >= 10;
+
+--9
+SELECT
+    c.id_categoria,
+    c.description, 
+    SUM(cp.cantidad) AS total_vendidos
+FROM categoria c
+JOIN producto p ON p.id_categoria = c.id_categoria
+JOIN compras_productos cp ON cp.id_producto = p.id_producto
+GROUP BY c.id_categoria;
+
+--10
+SELECT 
+    cli.id,
+    CONCAT(cli.nombre, ' ', cli.apellido) AS cliente, 
+    c.fecha
+FROM cliente cli
+JOIN compra c ON cli.id = c.id_cliente
+WHERE c.fecha BETWEEN '2024-07-01 00:00:00' AND '2024-07-31 00:00:00';
+
+--11
+SELECT
+    cli.id,
+    CONCAT(cli.nombre, ' ', cli.apellido) AS cliente, 
+    SUM(cp.total) AS total_gastado,
+    COUNT(c.id_compra) AS productos
+FROM cliente cli
+JOIN compra c ON c.id_cliente = cli.id 
+JOIN compras_productos cp ON cp.id_compra = c.id_compra
+GROUP BY cli.id;
+
+--12 
+SELECT 
+    p.id_producto,
+    p.nombre AS producto
+FROM producto p
+LEFT JOIN compras_productos cp ON p.id_producto = cp.id_producto
+WHERE cp.id_producto IS NULL;
+
+--13
+SELECT 
+    cli.id,
+    CONCAT(cli.nombre, ' ', cli.apellido) AS cliente, 
+    SUM(cp.total) AS total_gastado,
+    COUNT(c.id_compra) AS compras
+FROM cliente cli
+JOIN compra c ON c.id_cliente = cli.id
+JOIN compras_productos cp ON cp.id_compra = c.id_cliente
+GROUP BY c.id_compra
+HAVING COUNT(c.id_compra) > 1;
+
+--14
+SELECT
+    p.id_producto,
+    p.nombre AS producto,
+    c.description AS categoria
+FROM producto p
+JOIN categoria c ON c.id_categoria = p.id_categoria
+JOIN compras_productos cp ON cp.id_producto = p.id_producto
+
+
